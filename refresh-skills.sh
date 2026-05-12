@@ -1,0 +1,1 @@
+cp -R ~/.claude/skills/* ./skills/
