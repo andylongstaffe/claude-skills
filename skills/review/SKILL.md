@@ -27,7 +27,7 @@ Reviews code changes using the code-reviewer subagent and optionally commits/pus
 
 ### Step 1: Review Code
 
-Use the code-reviewer subagent to review all pending changes. Focus on:
+Use the code-reviewer subagent with `model: "sonnet"` to review all pending changes. Focus on:
 - Security issues
 - Code quality problems
 - Potential bugs

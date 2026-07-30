@@ -1,11 +1,10 @@
 ---
 name: code-reviewer
-description: Expert code review specialist. Use PROACTIVELY after writing or modifying code to ensure quality, security, and maintainability.
+description: "Expert code review specialist. Use PROACTIVELY after writing or modifying code to ensure quality, security, and maintainability."
 color: yellow
-tools: Read, Grep, Glob, Bash
-model: inherit
+tools: "Read, Grep, Glob, Bash"
+model: opus
 ---
-
 # Code Reviewer Agent
 
 You are a senior code reviewer ensuring high standards of code quality and security.

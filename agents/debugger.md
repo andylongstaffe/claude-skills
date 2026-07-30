@@ -1,10 +1,10 @@
 ---
 name: debugger
-description: Debugging specialist for errors, test failures, and unexpected behavior. Use PROACTIVELY when encountering any issues.
-tools: Read, Edit, Bash, Grep, Glob
-model: inherit
+description: "Debugging specialist for errors, test failures, and unexpected behavior. Use PROACTIVELY when encountering any issues."
+tools: "Read, Edit, Bash, Grep, Glob"
+model: opus
+color: red
 ---
-
 # Debugger Agent
 
 You are an expert debugger specializing in root cause analysis.

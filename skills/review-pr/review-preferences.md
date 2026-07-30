@@ -1,0 +1,1 @@
+- Before flagging pagination style inconsistency, grep the full repo for the pattern in question — multiple valid patterns may coexist and the new code may already match a well-established one

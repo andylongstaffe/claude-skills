@@ -1,7 +1,7 @@
 ---
 name: review-pr
-description: Review a pull request from a GitHub URL. Use when the user provides a PR link and wants a code review.
-argument-hint: <pr-url>
+description: Review a pull request from a GitHub URL. Use when the user provides a PR link and wants a code review. Pass --deep for 5-lens parallel review.
+argument-hint: <pr-url> [--deep]
 disable-model-invocation: true
 ---
 
@@ -11,11 +11,11 @@ Reviews a GitHub pull request and reports findings. Learns from your feedback ov
 
 ## Workflow
 
-1. Extract owner, repo, and PR number from the provided URL
+1. Extract owner, repo, PR number, and `--deep` flag from `$ARGUMENTS`
 2. Locate the repo locally (if available)
 3. Read learned review preferences (if any)
 4. Fetch the PR diff and details
-5. Review using the code-reviewer subagent, guided by preferences and local context
+5. Review: single `code-reviewer` subagent (default) **or** delegate to `deep-review` skill with diff + worktree path (`--deep`)
 6. Report findings to the user
 7. Ask for feedback and update preferences
 
@@ -23,7 +23,9 @@ Reviews a GitHub pull request and reports findings. Learns from your feedback ov
 
 ### Step 1: Fetch PR Details
 
-Extract the PR info from `$ARGUMENTS` (expects a URL like `https://github.com/owner/repo/pull/123`).
+Extract from `$ARGUMENTS`:
+- PR URL (e.g. `https://github.com/owner/repo/pull/123`)
+- `--deep` flag: if present, Step 4 delegates to the `deep-review` skill instead of a single reviewer
 
 Fetch the PR metadata and diff:
 ```bash
@@ -80,7 +82,9 @@ If the file doesn't exist, proceed without preferences.
 
 ### Step 4: Review Code
 
-Use the code-reviewer subagent to review the diff. Focus on:
+**If `--deep` was NOT specified (default):**
+
+Use the code-reviewer subagent (`model: "sonnet"`) to review the diff. Focus on:
 - Security issues
 - Code quality problems
 - Potential bugs
@@ -91,7 +95,20 @@ Use the code-reviewer subagent to review the diff. Focus on:
 Provide the subagent with:
 - PR title, description, base branch, and full diff
 - All loaded review preferences as additional guidance
-- If local repo was found: the repo path, so it can read surrounding files to check for pattern consistency, duplication, and broader context. Instruct it to check whether changed code duplicates existing utilities or diverges from established patterns.
+- If local repo was found: the repo path, so it can read surrounding files to check for pattern consistency, duplication, and broader context.
+
+---
+
+**If `--deep` was specified:**
+
+Delegate to the `deep-review` skill. Supply it with:
+- `diff`: the full PR diff fetched in Step 1
+- `repo-path`: the worktree path set up in Step 2 (or the local repo path if no worktree was created)
+- `review-preferences`: the loaded preferences from Step 3, prepended to each reviewer's prompt as additional guidance
+
+Tell the user: "Running deep review (5 parallel reviewers: accuracy, completeness, clarity, security, testing)."
+
+The `deep-review` skill will return findings and an overall assessment. Use those as the output for Step 5. Do NOT run `deep-review`'s commit/push steps (Steps 5–7 of that skill) — `review-pr` is read-only.
 
 ### Step 5: Report Findings
 
